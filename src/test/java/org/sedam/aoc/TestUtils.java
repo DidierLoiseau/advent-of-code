@@ -11,6 +11,9 @@ public class TestUtils {
         String fileName = "day" + day + "/" + prefix + "input-" + part + ".txt";
         List<String> content = Utils.readLines(fileName);
         if (content.isEmpty()) {
+            if (part > 1) {
+                return readInputFiles(day, 1, prefix);
+            }
             throw new RuntimeException("Input file '" + fileName + "' is empty");
         }
         return content;
