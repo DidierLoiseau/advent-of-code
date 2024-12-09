@@ -42,4 +42,34 @@ public class Day9 extends Day {
 
         return checksum;
     }
+
+    @Override
+    public long part2Long(List<String> input) {
+        int[] blocks = input.getFirst().chars().map(i -> i - '0').toArray();
+        int[] blockStart = new int[blocks.length];
+        for (int blockPos = 0, i = 0; i < blocks.length; i++) {
+            blockStart[i] = blockPos;
+            blockPos += blocks[i];
+        }
+
+        long checksum = 0;
+        for (int toMove = blocks.length - 1; toMove > 0; toMove -= 2) {
+            int fileId = toMove / 2;
+            var fileSize = blocks[toMove];
+            int destBlock = blockStart[toMove];
+            for (int i = 1; i < toMove; i += 2) {
+                if (blocks[i] >= fileSize) {
+                    destBlock = blockStart[i];
+                    blocks[i] -= fileSize;
+                    blockStart[i] += fileSize;
+                    break;
+                }
+            }
+            for (int j = 0; j < fileSize; j++) {
+                checksum += (long) (destBlock + j) * fileId;
+            }
+        }
+
+        return checksum;
+    }
 }
