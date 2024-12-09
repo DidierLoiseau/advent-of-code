@@ -1,9 +1,11 @@
 package org.sedam.aoc;
 
 import io.quarkus.test.junit.QuarkusTest;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 
 import java.lang.reflect.Method;
+import java.time.LocalDate;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -11,14 +13,18 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 @QuarkusTest
 public class DayTest {
 
-    @Test
-    public void testDay() throws Exception {
+    @ParameterizedTest
+    @ValueSource(ints = {1, 2})
+    public void testDay(int part) throws Exception {
         // Get the day number from the system property
         String dayNumber = System.getProperty("day");
+        int day;
         if (dayNumber == null || dayNumber.isEmpty()) {
-            throw new IllegalArgumentException("Please provide the day number with -Dday (e.g. -Dday=1)");
+            System.out.println("WARN: Using today as day number");
+            day = LocalDate.now().getDayOfMonth();
+        } else {
+            day = Integer.parseInt(dayNumber);
         }
-        int day = Integer.parseInt(dayNumber);
 
         // Dynamically load the corresponding Day object
         String className = "org.sedam.aoc.Day" + day;
@@ -31,8 +37,7 @@ public class DayTest {
         Day dayObject = (Day) dayClass.getDeclaredConstructor().newInstance();
 
         // Execute the test
-        testPart(day, dayObject, 1);
-        testPart(day, dayObject, 2);
+        testPart(day, dayObject, part);
     }
 
     private void testPart(int day, Day dayObject, int part) throws Exception {
