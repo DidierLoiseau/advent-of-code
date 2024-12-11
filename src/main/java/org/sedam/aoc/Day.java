@@ -6,6 +6,10 @@ import java.util.regex.Pattern;
 public class Day {
     protected static final Pattern SPACE_PATTERN = Pattern.compile(" ");
 
+    public boolean hasPart2ExpectedResult() {
+        return true;
+    }
+
     public String part1(List<String> input) {
         return "" + part1Long(input);
     }

@@ -50,9 +50,12 @@ public class DayTest {
         Method partMethod = dayObject.getClass().getMethod(methodName, List.class);
 
         // Test Part
-        String testPartResult = (String) partMethod.invoke(dayObject, testInput);
-        String expectedTestResult = TestUtils.readExpectedResult(day, part);
-        assertEquals(expectedTestResult, testPartResult, "\nDay " + day + " - Part " + part + " is not matching the expected result.");
+        if (dayObject.hasPart2ExpectedResult()) {
+            String expectedTestResult = TestUtils.readExpectedResult(day, part);
+            String testPartResult = (String) partMethod.invoke(dayObject, testInput);
+            assertEquals(expectedTestResult, testPartResult,
+                    "\nDay " + day + " - Part " + part + " is not matching the expected result.");
+        }
 
         // Real Part
         String partResult = (String) partMethod.invoke(dayObject, realInput);
