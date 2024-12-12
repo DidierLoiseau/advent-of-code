@@ -7,8 +7,6 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class Day10 extends Day {
-    record Coord(int x, int y) {
-    }
 
     @Override
     public long part1Long(List<String> input) {
@@ -21,7 +19,7 @@ public class Day10 extends Day {
                     for (int h = 1; h < 10; h++) {
                         int finalH = h;
                         current = current.stream()
-                                .flatMap(c -> neighboursAtHight(map, c.x, c.y, finalH))
+                                .flatMap(c -> neighboursAtHight(map, c.x(), c.y(), finalH))
                                 .collect(Collectors.toSet());
                     }
                     count += current.size();
@@ -45,7 +43,7 @@ public class Day10 extends Day {
         if (y < map[0].length - 1) {
             builder.add(new Coord(x, y + 1));
         }
-        return builder.build().filter(c -> map[c.x][c.y] == h);
+        return builder.build().filter(c -> map[c.x()][c.y()] == h);
     }
 
     @Override
@@ -59,7 +57,7 @@ public class Day10 extends Day {
                     for (int h = 1; h < 10; h++) {
                         int finalH = h;
                         current = current.entrySet().stream()
-                                .flatMap(e -> neighboursAtHight(map, e.getKey().x, e.getKey().y, finalH).map(
+                                .flatMap(e -> neighboursAtHight(map, e.getKey().x(), e.getKey().y(), finalH).map(
                                         n -> Map.entry(n, e.getValue())))
                                 .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, Integer::sum));
                     }

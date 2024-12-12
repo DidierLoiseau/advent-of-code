@@ -6,6 +6,10 @@ import java.util.regex.Pattern;
 public class Day {
     protected static final Pattern SPACE_PATTERN = Pattern.compile(" ");
 
+    static char[][] toChars(List<String> input) {
+        return input.stream().map(String::toCharArray).toArray(char[][]::new);
+    }
+
     public boolean hasPart2ExpectedResult() {
         return true;
     }

@@ -5,7 +5,7 @@ import java.util.List;
 public class Day8 extends Day {
     @Override
     public long part1Long(List<String> input) {
-        char[][] map = input.stream().map(String::toCharArray).toArray(char[][]::new);
+        char[][] map = toChars(input);
         boolean[][] antinodes = new boolean[map.length][map[0].length];
 
         int count = 0;
@@ -34,7 +34,7 @@ public class Day8 extends Day {
 
     @Override
     public long part2Long(List<String> input) {
-        char[][] map = input.stream().map(String::toCharArray).toArray(char[][]::new);
+        char[][] map = toChars(input);
         boolean[][] antinodes = new boolean[map.length][map[0].length];
 
         int count = 0;
