@@ -69,15 +69,40 @@ public class Day12 extends Day {
             }
         }
         int sides = 0;
-        boolean aboveInReg = false, belowInReg = false;
         for (int y = 0; y < height; y++) {
-            boolean prevInReg = false;
+            boolean prevFenceAbove = false, prevFenceBelow = false;
             for (int x = 0; x < width; x++) {
                 if (inRegion[x][y]) {
-                    // TODO
+                    if (!prevFenceAbove && (y == 0 || !inRegion[x][y - 1])) {
+                        sides++;
+                    }
+                    prevFenceAbove = y == 0 || !inRegion[x][y - 1];
+                    if (!prevFenceBelow && (y == height - 1 || !inRegion[x][y + 1])) {
+                        sides++;
+                    }
+                    prevFenceBelow = y == height - 1 || !inRegion[x][y + 1];
+                } else {
+                    prevFenceBelow = prevFenceAbove = false;
                 }
             }
         }
-        return size * sides;
+        for (int x = 0; x < width; x++) {
+            boolean prevFenceLeft = false, prevFenceRight = false;
+            for (int y = 0; y < height; y++) {
+                if (inRegion[x][y]) {
+                    if (!prevFenceLeft && (x == 0 || !inRegion[x - 1][y])) {
+                        sides++;
+                    }
+                    prevFenceLeft = x == 0 || !inRegion[x - 1][y];
+                    if (!prevFenceRight && (x == width - 1 || !inRegion[x + 1][y])) {
+                        sides++;
+                    }
+                    prevFenceRight = x == width - 1 || !inRegion[x + 1][y];
+                } else {
+                    prevFenceRight = prevFenceLeft = false;
+                }
+            }
+        }
+        return (long) size * sides;
     }
 }
