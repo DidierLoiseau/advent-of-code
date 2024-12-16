@@ -94,8 +94,12 @@ public class Day16 extends Day {
         Stack<Node> toExplore = new Stack<>();
         toExplore.push(new Node(target, E));
         toExplore.push(new Node(target, N));
+        Set<Node> visited = new HashSet<>();
         while (!toExplore.isEmpty()) {
             var node = toExplore.pop();
+            if (!visited.add(node)) {
+                continue;
+            }
             int cost = nodeCost.get(node);
             var prev = node.moveBack();
             if (nodeCost.containsKey(prev) && nodeCost.get(prev) == cost - 1) {
