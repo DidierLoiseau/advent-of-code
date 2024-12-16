@@ -26,7 +26,7 @@ public class Day6 extends Day {
 
     @Override
     public String part1(List<String> input) {
-        boolean[][] walls = toWallArray(input);
+        boolean[][] walls = Utils.toWallArray(input);
         int x = getX(input);
         int y = getY(input);
         var dir = Direction.N;
@@ -55,25 +55,9 @@ public class Day6 extends Day {
         return x >= 0 && y >= 0 && x < walls[0].length && y < walls.length;
     }
 
-    private boolean[][] toWallArray(List<String> input) {
-        return input.stream()
-                .map(this::toWallArray)
-                .toArray(boolean[][]::new);
-    }
-
-    private boolean[] toWallArray(String s) {
-        var walls = new boolean[s.length()];
-        for (int i = 0; i < s.length(); i++) {
-            if (s.charAt(i) == '#') {
-                walls[i] = true;
-            }
-        }
-        return walls;
-    }
-
     @Override
     public String part2(List<String> input) {
-        boolean[][] walls = toWallArray(input);
+        boolean[][] walls = Utils.toWallArray(input);
         int startX = getX(input);
         int startY = getY(input);
         var count = 0;
