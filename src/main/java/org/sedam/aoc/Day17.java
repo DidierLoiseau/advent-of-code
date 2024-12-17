@@ -6,9 +6,9 @@ import java.util.regex.Pattern;
 public class Day17 extends Day {
     @Override
     public String part1(List<String> input) {
-        int a = extractRegister(input.get(0));
-        int b = extractRegister(input.get(1));
-        int c = extractRegister(input.get(2));
+        long a = extractRegister(input.get(0));
+        long b = extractRegister(input.get(1));
+        long c = extractRegister(input.get(2));
         int[] prog =
                 Pattern.compile(",").splitAsStream(input.get(4).split(": ")[1]).mapToInt(Integer::parseInt).toArray();
         int pointer = 0;
@@ -52,7 +52,7 @@ public class Day17 extends Day {
         return result.toString();
     }
 
-    private int getCombo(int op, int a, int b, int c) {
+    private long getCombo(int op, long a, long b, long c) {
         return switch (op) {
             case 4 -> a;
             case 5 -> b;
@@ -62,7 +62,41 @@ public class Day17 extends Day {
         };
     }
 
-    private int extractRegister(String s) {
-        return Integer.parseInt(s.split(": ")[1]);
+    private long extractRegister(String s) {
+        return Long.parseLong(s.split(": ")[1]);
+    }
+
+    @Override
+    public long part2Long(List<String> input) {
+        int[] prog =
+                Pattern.compile(",").splitAsStream(input.get(4).split(": ")[1]).mapToInt(Integer::parseInt).toArray();
+
+        return solveRecursively(prog, 0, prog.length - 1);
+    }
+
+    private long solveRecursively(int[] prog, long a, int i) {
+        if (i < 0) {
+            return a;
+        }
+        a <<= 3;
+        int targetB = prog[i] ^ 7;
+        for (int aSuffix = 0; aSuffix < 8; aSuffix++) {
+            long aTemp = a | aSuffix;
+            int b = aSuffix ^ 7;
+            int c = (int) ((aTemp >> b) % 8);
+            if ((b ^ c) == targetB) {
+                aTemp = solveRecursively(prog, aTemp, i - 1);
+                if (aTemp > 0) {
+                    return aTemp;
+                }
+            }
+        }
+        System.out.printf("Couldn’t find a suffix for %d at pos %d (%d) %n", a, i, targetB);
+        return -1;
+    }
+
+    @Override
+    public boolean hasPart2ExpectedResult() {
+        return false;
     }
 }
