@@ -70,6 +70,9 @@ public class Day17 extends Day {
     public long part2Long(List<String> input) {
         int[] prog =
                 Pattern.compile(",").splitAsStream(input.get(4).split(": ")[1]).mapToInt(Integer::parseInt).toArray();
+        assert prog[prog.length - 4] == 5; // penultimate instr is out
+        assert prog[prog.length - 2] == 3; // ultimate instr is jnz
+        assert prog[prog.length - 1] == 0; // jnz 0
 
         return solveRecursively(prog, 0, prog.length - 1);
     }
@@ -79,24 +82,47 @@ public class Day17 extends Day {
             return a;
         }
         a <<= 3;
-        int targetB = prog[i] ^ 7;
         for (int aSuffix = 0; aSuffix < 8; aSuffix++) {
-            long aTemp = a | aSuffix;
-            int b = aSuffix ^ 7;
-            int c = (int) ((aTemp >> b) % 8);
-            if ((b ^ c) == targetB) {
-                aTemp = solveRecursively(prog, aTemp, i - 1);
-                if (aTemp > 0) {
-                    return aTemp;
-                }
+            long aTemp = execute(prog, i, a | aSuffix);
+            if (aTemp > 0) {
+                return aTemp;
             }
         }
-        System.out.printf("Couldn’t find a suffix for %d at pos %d (%d) %n", a, i, targetB);
         return -1;
     }
 
-    @Override
-    public boolean hasPart2ExpectedResult() {
-        return false;
+    private long execute(int[] prog, int i, long aOrig) {
+        long a = aOrig, b = 0, c = 0;
+        for (int ptr = 0; ptr < prog.length; ptr += 2) {
+            int arg = prog[ptr + 1];
+            switch (prog[ptr]) {
+                case 0:
+                    assert arg == 3;
+                    a >>= arg;
+                    break;
+                case 1:
+                    b ^= arg;
+                    break;
+                case 2:
+                    b = getCombo(arg, a, b, c) % 8;
+                    break;
+                case 3:
+                    throw new IllegalStateException("Can’t jump while solving at " + i
+                            + " – ptr: " + ptr + " - a: " + a);
+                case 4:
+                    b ^= c;
+                    break;
+                case 5:
+                    long v = getCombo(arg, a, b, c);
+                    return (v % 8) != prog[i] ? -1 : solveRecursively(prog, aOrig, i - 1);
+                case 6:
+                    b = a >> getCombo(arg, a, b, c);
+                    break;
+                case 7:
+                    c = a >> getCombo(arg, a, b, c);
+                    break;
+            }
+        }
+        throw new IllegalStateException("Reached end of program at iter " + i + " a: " + a);
     }
 }
