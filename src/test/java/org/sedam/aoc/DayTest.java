@@ -5,7 +5,8 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
 import java.lang.reflect.Method;
-import java.time.LocalDate;
+import java.time.Instant;
+import java.time.ZoneOffset;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -21,7 +22,7 @@ public class DayTest {
         int day;
         if (dayNumber == null || dayNumber.isEmpty()) {
             System.out.println("WARN: Using today as day number");
-            day = LocalDate.now().getDayOfMonth();
+            day = Instant.now().atOffset(ZoneOffset.ofHours(-5)).getDayOfMonth();
         } else {
             day = Integer.parseInt(dayNumber);
         }

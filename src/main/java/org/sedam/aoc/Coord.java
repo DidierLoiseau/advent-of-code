@@ -11,6 +11,10 @@ record Coord(int x, int y) {
                 .flatMap(x -> IntStream.range(0, length).mapToObj(y -> new Coord(x, y)));
     }
 
+    public Coord plus(int dx, int dy) {
+        return new Coord(x + dx, y + dy);
+    }
+
     public boolean isValid(int width, int length) {
         return x >= 0 && y >= 0 && x < width && y < length;
     }
@@ -28,13 +32,23 @@ record Coord(int x, int y) {
         );
     }
 
-    public Coord jump(Direction d, int dist) {
-        return new Coord(x + d.x * dist, y + d.y * dist);
-    }
-
     public static Coord getCoord(List<String> input, char c) {
         int x = input.stream().filter(l -> l.contains(c + "")).mapToInt(l -> l.indexOf(c)).findFirst().orElseThrow();
         int y = (int) input.stream().takeWhile(l -> !l.contains(c + "")).count();
         return new Coord(x, y);
+    }
+
+    boolean matches(boolean[][] walls) {
+        return walls[y()][x()];
+    }
+
+    boolean isValidMatching(boolean[][] walls) {
+        return isValid(walls.length, walls[0].length)
+                && matches(walls);
+    }
+
+    boolean isValidNonMatching(boolean[][] walls) {
+        return isValid(walls.length, walls[0].length)
+                && !matches(walls);
     }
 }
