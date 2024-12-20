@@ -11,31 +11,6 @@ import static org.sedam.aoc.Day15.ObjectType.EMPTY;
 
 public class Day15 extends Day {
     @RequiredArgsConstructor
-    enum Direction {
-        N('^', false, 0, -1),
-        E('>', true, 1, 0),
-        S('v', false, 0, 1),
-        W('<', true, -1, 0);
-
-        final int symbol;
-
-        final boolean horizontal;
-
-        final int x;
-
-        final int y;
-
-        static Direction from(int c) {
-            for (Direction d : values()) {
-                if (c == d.symbol) {
-                    return d;
-                }
-            }
-            throw new IllegalArgumentException("" + c);
-        }
-    }
-
-    @RequiredArgsConstructor
     enum ObjectType {
         WALL('#'), BOX('O'), EMPTY('.'), BOT('@'), BOXRIGHT('R');
 
