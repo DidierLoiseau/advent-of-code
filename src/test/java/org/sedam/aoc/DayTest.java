@@ -1,13 +1,13 @@
 package org.sedam.aoc;
 
-import io.quarkus.test.junit.QuarkusTest;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.ValueSource;
-
 import java.lang.reflect.Method;
 import java.time.Instant;
 import java.time.ZoneOffset;
 import java.util.List;
+
+import io.quarkus.test.junit.QuarkusTest;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -51,7 +51,7 @@ public class DayTest {
         Method partMethod = dayObject.getClass().getMethod(methodName, List.class);
 
         // Test Part
-        if (dayObject.hasPart2ExpectedResult()) {
+        if (part == 1 || dayObject.hasPart2ExpectedResult()) {
             String expectedTestResult = TestUtils.readExpectedResult(day, part);
             String testPartResult = (String) partMethod.invoke(dayObject, testInput);
             assertEquals(expectedTestResult, testPartResult,
