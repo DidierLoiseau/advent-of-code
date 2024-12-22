@@ -61,7 +61,8 @@ public class Day21 extends Day {
 
     private long getCost(Map<CostKey, Long> costs, List<SmartMove> moves, int depth) {
         if (depth == 0) {
-            return moves.stream().mapToLong(m -> m.times).sum() + 1;
+            // hooman press button 🐒 (must be tired at this point!)
+            return moves.stream().mapToLong(m -> m.times).sum();
         }
         CostKey key = new CostKey(moves, depth);
         if (costs.containsKey(key)) {
@@ -99,6 +100,7 @@ public class Day21 extends Day {
             if (dest.y() > pos.y()) {
                 res.add(new SmartMove(DOWN, dest.y() - pos.y()));
             }
+            res.add(new SmartMove(PRESS, 1));
             pos = dest;
             main.add(res);
         }
@@ -118,20 +120,13 @@ public class Day21 extends Day {
         var main = new ArrayList<List<SmartMove>>();
         for (var move : moves) {
             var dest = DIRPAD.get(move.m);
-            main.add(getSmartMoves(pos, dest));
+            main.add(getSmartMoves(pos, dest, move.times));
             pos = dest;
-            if (move.times > 1) {
-                for (int i = 1; i < move.times; i++) {
-                    main.add(List.of());
-                }
-            }
         }
-        // back to A at the end
-        main.add(getSmartMoves(pos, DIRPAD_A));
         return main;
     }
 
-    private static ArrayList<SmartMove> getSmartMoves(Coord pos, Coord dest) {
+    private static ArrayList<SmartMove> getSmartMoves(Coord pos, Coord dest, int presses) {
         var res = new ArrayList<SmartMove>();
         // moving left is costly, so prefer to do it first and do up or down on the way back
         if (dest.x() < pos.x() && (pos.y() != 0 || dest.x() > 0)) {
@@ -141,12 +136,18 @@ public class Day21 extends Day {
         if (dest.y() > pos.y()) {
             res.add(new SmartMove(DOWN, dest.y() - pos.y()));
         }
+        if (dest.y() < pos.y() && pos.x() == 1) {
+            // prefer up-right over right-up, it’s cheaper after 4 levels!
+            res.add(new SmartMove(UP, 1));
+            pos = new Coord(1, 0);
+        }
         if (dest.x() != pos.x()) {
             res.add(new SmartMove(dest.x() < pos.x() ? LEFT : RIGHT, abs(pos.x() - dest.x())));
         }
         if (dest.y() < pos.y()) {
-            res.add(new SmartMove(UP, pos.y() - dest.y()));
+            res.add(new SmartMove(UP, 1));
         }
+        res.add(new SmartMove(PRESS, presses));
         return res;
     }
 
