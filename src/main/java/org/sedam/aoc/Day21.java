@@ -17,10 +17,6 @@ import static org.sedam.aoc.Day21.Move.UP;
 
 public class Day21 extends Day {
 
-    public static final Coord NUMPAD_A = new Coord(2, 3);
-
-    public static final Coord DIRPAD_A = new Coord(2, 0);
-
     @RequiredArgsConstructor
     enum Move {
         UP("^"), RIGHT(">"), DOWN("v"), LEFT("<"), PRESS("A");
@@ -38,19 +34,26 @@ public class Day21 extends Day {
     record CostKey(List<SmartMove> moves, int depth) {
     }
 
-    final Map<Character, Coord> NUMPAD = Map.ofEntries(
-            entry('7', new Coord(0, 0)),
-            entry('8', new Coord(1, 0)),
-            entry('9', new Coord(2, 0)),
-            entry('4', new Coord(0, 1)),
-            entry('5', new Coord(1, 1)),
-            entry('6', new Coord(2, 1)),
-            entry('1', new Coord(0, 2)),
-            entry('2', new Coord(1, 2)),
-            entry('3', new Coord(2, 2)),
-            entry('0', new Coord(1, 3)),
-            entry('A', NUMPAD_A)
-    );
+    @Override
+    public long part1Long(List<String> input) {
+        Map<CostKey, Long> costs = new HashMap<>();
+        return input.stream()
+                .mapToLong(s -> Long.parseLong(s.substring(0, s.length() - 1)) * getCost(costs, s, 2))
+                .sum();
+    }
+
+    @Override
+    public long part2Long(List<String> input) {
+        Map<CostKey, Long> costs = new HashMap<>();
+        return input.stream()
+                .mapToLong(s -> Long.parseLong(s.substring(0, s.length() - 1)) * getCost(costs, s, 25))
+                .sum();
+    }
+
+    @Override
+    public boolean hasPart2ExpectedResult() {
+        return false;
+    }
 
     private long getCost(Map<CostKey, Long> costs, String s, int depth) {
         return getSmartNumpadMoves(s)
@@ -74,6 +77,22 @@ public class Day21 extends Day {
         costs.put(key, cost);
         return cost;
     }
+
+    static final Coord NUMPAD_A = new Coord(2, 3);
+
+    static final Map<Character, Coord> NUMPAD = Map.ofEntries(
+            entry('7', new Coord(0, 0)),
+            entry('8', new Coord(1, 0)),
+            entry('9', new Coord(2, 0)),
+            entry('4', new Coord(0, 1)),
+            entry('5', new Coord(1, 1)),
+            entry('6', new Coord(2, 1)),
+            entry('1', new Coord(0, 2)),
+            entry('2', new Coord(1, 2)),
+            entry('3', new Coord(2, 2)),
+            entry('0', new Coord(1, 3)),
+            entry('A', NUMPAD_A)
+    );
 
     List<List<SmartMove>> getSmartNumpadMoves(String s) {
         var pos = NUMPAD_A;
@@ -107,6 +126,8 @@ public class Day21 extends Day {
         return main;
     }
 
+    static final Coord DIRPAD_A = new Coord(2, 0);
+
     final Map<Move, Coord> DIRPAD = Map.of(
             UP, new Coord(1, 0),
             PRESS, DIRPAD_A,
@@ -120,13 +141,13 @@ public class Day21 extends Day {
         var main = new ArrayList<List<SmartMove>>();
         for (var move : moves) {
             var dest = DIRPAD.get(move.m);
-            main.add(getSmartMoves(pos, dest, move.times));
+            main.add(getSmartDirpadMoves(pos, dest, move.times));
             pos = dest;
         }
         return main;
     }
 
-    private static ArrayList<SmartMove> getSmartMoves(Coord pos, Coord dest, int presses) {
+    private static ArrayList<SmartMove> getSmartDirpadMoves(Coord pos, Coord dest, int presses) {
         var res = new ArrayList<SmartMove>();
         // moving left is costly, so prefer to do it first and do up or down on the way back
         if (dest.x() < pos.x() && (pos.y() != 0 || dest.x() > 0)) {
@@ -149,26 +170,5 @@ public class Day21 extends Day {
         }
         res.add(new SmartMove(PRESS, presses));
         return res;
-    }
-
-    @Override
-    public long part1Long(List<String> input) {
-        Map<CostKey, Long> costs = new HashMap<>();
-        return input.stream()
-                .mapToLong(s -> Long.parseLong(s.substring(0, s.length() - 1)) * getCost(costs, s, 2))
-                .sum();
-    }
-
-    @Override
-    public long part2Long(List<String> input) {
-        Map<CostKey, Long> costs = new HashMap<>();
-        return input.stream()
-                .mapToLong(s -> Long.parseLong(s.substring(0, s.length() - 1)) * getCost(costs, s, 25))
-                .sum();
-    }
-
-    @Override
-    public boolean hasPart2ExpectedResult() {
-        return false;
     }
 }
