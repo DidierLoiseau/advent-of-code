@@ -1,18 +1,18 @@
 package org.sedam.aoc;
 
-import java.util.ArrayDeque;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static java.util.Comparator.comparing;
+import static java.util.Collections.emptySet;
 import static java.util.Map.entry;
+import static java.util.stream.Collectors.counting;
 import static java.util.stream.Collectors.groupingBy;
 import static java.util.stream.Collectors.joining;
 import static java.util.stream.Collectors.mapping;
+import static java.util.stream.Collectors.toSet;
 
 public class Day23 extends Day {
 
@@ -23,7 +23,7 @@ public class Day23 extends Day {
                     var split = s.split("-");
                     return Stream.of(entry(split[0], split[1]), entry(split[1], split[0]));
                 })
-                .collect(groupingBy(Map.Entry::getKey, mapping(Map.Entry::getValue, Collectors.toSet())));
+                .collect(groupingBy(Map.Entry::getKey, mapping(Map.Entry::getValue, toSet())));
 
         return graph.entrySet().stream()
                 .mapToLong(e -> {
@@ -50,32 +50,42 @@ public class Day23 extends Day {
                     var split = s.split("-");
                     return Stream.of(entry(split[0], split[1]), entry(split[1], split[0]));
                 })
-                .collect(groupingBy(Map.Entry::getKey, mapping(Map.Entry::getValue, Collectors.toSet())));
+                .collect(groupingBy(Map.Entry::getKey, mapping(Map.Entry::getValue, toSet())));
+        // they all have the same number of neighbors!
+        System.out.println("Size: " + graph.size() +
+                ", neighbour count: " + graph.values().stream().map(Set::size).collect(groupingBy(i -> i, counting())));
 
-        Set<String> visited = new HashSet<>();
-        return graph.keySet().stream()
-                .filter(visited::add)
-                .map(node -> connectedGraph(graph, visited, node))
-                .max(comparing(Set::size))
-                .orElseThrow()
-                .stream()
-                .sorted()
-                .collect(joining(","));
+        Set<String> maxClique = bronKerbosch(graph, new HashSet<>(), graph.keySet(), emptySet(), 0);
+        return maxClique.stream().sorted().collect(joining(","));
     }
 
-    private Set<String> connectedGraph(Map<String, Set<String>> graph, Set<String> visited,
-                                       String node) {
-        // this is incorrect, we need to find maximal cliques instead
-        Set<String> neighbs = graph.get(node);
-        var connect = new HashSet<>(neighbs);
-        visited.addAll(neighbs);
-        var toVisit = new ArrayDeque<>(neighbs);
-        while (!toVisit.isEmpty()) {
-            String neighb = toVisit.pop();
-            if (visited.add(neighb)) {
-                toVisit.addAll(graph.get(neighb));
+    private Set<String> bronKerbosch(Map<String, Set<String>> graph, Set<String> r, Set<String> origP,
+                                     Set<String> origX, int minSize) {
+        if (origP.isEmpty() && origX.isEmpty()) {
+            if (r.size() > minSize) {
+                System.out.println("New max clique: " + r.stream().sorted().collect(joining(",")));
+                return new HashSet<>(r);
             }
+            return emptySet();
         }
-        return connect;
+        Set<String> maxClique = Set.of();
+        var x = new HashSet<>(origX);
+        var p = new HashSet<>(origP);
+        for (String n : origP) {
+            r.add(n);
+            Set<String> neihbs = graph.get(n);
+            var newP = neihbs.stream().filter(p::contains).collect(toSet());
+            var newX = x.stream().filter(neihbs::contains).collect(toSet());
+            Set<String> tmpClique = bronKerbosch(graph, r, newP, newX, minSize);
+            p.remove(n);
+            x.add(n);
+            if (tmpClique.size() > minSize) {
+                maxClique = tmpClique;
+                minSize = tmpClique.size();
+            }
+            r.remove(n);
+        }
+
+        return maxClique;
     }
 }
