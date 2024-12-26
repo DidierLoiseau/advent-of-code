@@ -43,6 +43,6 @@ public class Day25 extends Day {
 
     @Override
     public String part2(List<String> input) {
-        return "48 stars";
+        return "49 stars";
     }
 }
