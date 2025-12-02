@@ -46,3 +46,4 @@ nb-configuration.xml
 
 # challenge data
 /src/main/resources/day*
+/src/main/resources/archive
