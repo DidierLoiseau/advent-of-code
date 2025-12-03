@@ -1,7 +1,12 @@
 package org.sedam.aoc;
 
+import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.regex.Pattern;
+import java.util.stream.IntStream;
+import java.util.stream.LongStream;
 
 public class Day2 extends Day {
 	@Override
@@ -59,5 +64,51 @@ public class Day2 extends Day {
 			start = left;
 		}
 		return start;
+	}
+
+	@Override
+	public long part2Long(List<String> input) {
+		return Pattern.compile(",").splitAsStream(input.getFirst())
+				.mapToLong(this::sumRepetitionsInRange)
+				.sum();
+	}
+
+	private long sumRepetitionsInRange(String s) {
+		var startLen = s.indexOf('-');
+		var rangeEnd = s.substring(startLen + 1);
+		if (rangeEnd.length() < startLen || rangeEnd.length() > startLen + 1) {
+			throw new IllegalArgumentException("can’t handle more than 1 digit length difference: " + s);
+		}
+		long start = Long.parseLong(s.substring(0, startLen));
+		long end = Long.parseLong(s.substring(startLen + 1));
+		long nextPow10 = Math.powExact(10L, startLen);
+		return LongStream.rangeClosed(start, end)
+				.flatMap(i ->
+						getPatterns(i < nextPow10 ? startLen : startLen + 1)
+								.filter(l -> i % l == 0)
+								.map(_ -> i)
+								.limit(1)
+				)
+				.sum();
+	}
+
+	private final Map<Integer, long[]> patterns = new HashMap<>();
+
+	private LongStream getPatterns(int len) {
+		var patternForLen = patterns.computeIfAbsent(len, _ -> IntStream.rangeClosed(1, len / 2)
+				.filter(i -> len % i == 0)
+				.mapToLong(i -> buildPattern(i, len / i))
+				.toArray());
+		return Arrays.stream(patternForLen);
+	}
+
+	private long buildPattern(int numDigits, int numRepeats) {
+		long pattern = 1;
+		int mult = Math.powExact(10, numDigits);
+		for (int j = 1; j < numRepeats; j++) {
+			pattern *= mult;
+			pattern++;
+		}
+		return pattern;
 	}
 }
