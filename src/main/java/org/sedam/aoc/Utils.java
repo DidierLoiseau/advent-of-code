@@ -15,16 +15,20 @@ public class Utils {
         }
     }
 
-    static boolean[][] toWallArray(List<String> input) {
+	static boolean[][] toWallArray(List<String> input) {
+		return toBoolArray(input, '#');
+	}
+
+	static boolean[][] toBoolArray(List<String> input, char trueChar) {
         return input.stream()
-                .map(Utils::toWallArray)
+                .map(s -> toBoolArray(s, trueChar))
                 .toArray(boolean[][]::new);
     }
 
-    private static boolean[] toWallArray(String s) {
+    private static boolean[] toBoolArray(String s, char trueChar) {
         var walls = new boolean[s.length()];
         for (int i = 0; i < s.length(); i++) {
-            if (s.charAt(i) == '#') {
+            if (s.charAt(i) == trueChar) {
                 walls[i] = true;
             }
         }

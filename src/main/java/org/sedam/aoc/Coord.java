@@ -32,23 +32,32 @@ record Coord(int x, int y) {
         );
     }
 
+    public Stream<Coord> get8Neighb() {
+		return Stream.concat(get4Neighb(), Stream.of(
+                new Coord(x - 1, y - 1),
+                new Coord(x + 1, y - 1),
+                new Coord(x + 1, y + 1),
+                new Coord(x - 1, y + 1)
+        ));
+    }
+
     public static Coord getCoord(List<String> input, char c) {
         int x = input.stream().filter(l -> l.contains(c + "")).mapToInt(l -> l.indexOf(c)).findFirst().orElseThrow();
         int y = (int) input.stream().takeWhile(l -> !l.contains(c + "")).count();
         return new Coord(x, y);
     }
 
-    boolean matches(boolean[][] walls) {
-        return walls[y()][x()];
+    boolean matches(boolean[][] grid) {
+        return grid[y()][x()];
     }
 
-    boolean isValidMatching(boolean[][] walls) {
-        return isValid(walls.length, walls[0].length)
-                && matches(walls);
+    boolean isValidMatching(boolean[][] grid) {
+        return isValid(grid.length, grid[0].length)
+                && matches(grid);
     }
 
-    boolean isValidNonMatching(boolean[][] walls) {
-        return isValid(walls.length, walls[0].length)
-                && !matches(walls);
+    boolean isValidNonMatching(boolean[][] grid) {
+        return isValid(grid.length, grid[0].length)
+                && !matches(grid);
     }
 }
