@@ -25,7 +25,7 @@ public class Utils {
                 .toArray(boolean[][]::new);
     }
 
-    private static boolean[] toBoolArray(String s, char trueChar) {
+    static boolean[] toBoolArray(String s, char trueChar) {
         var walls = new boolean[s.length()];
         for (int i = 0; i < s.length(); i++) {
             if (s.charAt(i) == trueChar) {
